@@ -1,5 +1,9 @@
 'use strict';
+const path = require('path');
+
 const getDirs = require('../utils/getDirs');
+const isGitRepo = require('../utils/isGitRepo');
+const readRepoFile = require('../utils/readRepoFile');
 
 const ROOT = '..';
 
@@ -17,7 +21,18 @@ module.exports.all = function * all (next) {
 module.exports.fetch = function * fetch (id, next) {
   if ('GET' != this.method) return yield next;
   // Quick hack.
-  this.body = 'id';
+  yield isGitRepo(path.join(ROOT, id))
+    .then(repo => {
+      return readRepoFile(repo, 'README.md');
+    })
+    .then(blob => {
+      this.body = {
+        id,
+        content: blob.toString()
+      };
+    }).catch(err => {
+      this.body = err.toString();
+    });
 
 };
 
