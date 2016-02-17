@@ -5,7 +5,7 @@ const getDirs = require('../utils/getDirs');
 const isGitRepo = require('../utils/isGitRepo');
 const readRepoFile = require('../utils/readRepoFile');
 
-const ROOT = '..';
+const ROOT = '/opt/git';
 
 module.exports.home = function * home (next) {
   if ('GET' != this.method) return yield next;
@@ -28,7 +28,7 @@ module.exports.fetch = function * fetch (id, next) {
     .then(blob => {
       this.body = {
         id,
-        content: blob.toString()
+        readmeContent: blob.toString()
       };
     }).catch(err => {
       this.body = err.toString();
