@@ -2,8 +2,8 @@
 const path = require('path');
 
 const getDirs = require('../utils/getDirs');
-const isGitRepo = require('../utils/isGitRepo');
 const readRepoFile = require('../utils/readRepoFile');
+const openGitRepo = require('../utils/openGitRepo');
 
 const ROOT = '/opt/git';
 
@@ -20,39 +20,24 @@ module.exports.all = function * all (next) {
 
 module.exports.fetch = function * fetch (id, next) {
   if ('GET' != this.method) return yield next;
-  // Quick hack.
-  yield isGitRepo(path.join(ROOT, id))
-    .then(
-      repo => {
-        // this is a git repo
-        // read the readme file
-        return readRepoFile(repo, 'README.md');
-      },
-      err => {
-        // this is not a git repo
-        this.body = {
-          type: 'error',
-          message: `${id} is not a valid git repo.`
-        };
-      }
-    ).then(
-      blob => {
-        if (!blob) return;
-        // there is a readme file
-        this.body = {
-          id,
-          readmeContent: blob.toString()
-        };
-      },
-      err => {
-        // no readme file found
-        this.body = { id };
-      }
-    ).catch(
-      err => {
-        this.body = err.toString();
-      }
-    );
+
+  let gitRepo;
+  try {
+    gitRepo = yield openGitRepo(path.join(ROOT, id));
+  } catch (err) {
+    this.throw(404, `repo with id: ${id} was not found`);
+  }
+
+  try {
+    const blob = yield readRepoFile(gitRepo, 'README.md');
+    this.body = {
+      id,
+      readmeContent: blob.toString()
+    };
+  } catch (err) {
+    // no readme file
+    this.body = { id };
+  }
 };
 
 module.exports.head = function * (){
