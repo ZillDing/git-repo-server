@@ -4,10 +4,14 @@ const logger = require('koa-logger');
 const serve = require('koa-static');
 const route = require('koa-route');
 const koa = require('koa');
+const cors = require('koa-cors');
 const path = require('path');
 const app = module.exports = koa();
 
 const repos = require('./controllers/repos');
+
+// cors
+app.use(cors());
 
 // Logger
 app.use(logger());
