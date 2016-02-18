@@ -22,18 +22,37 @@ module.exports.fetch = function * fetch (id, next) {
   if ('GET' != this.method) return yield next;
   // Quick hack.
   yield isGitRepo(path.join(ROOT, id))
-    .then(repo => {
-      return readRepoFile(repo, 'README.md');
-    })
-    .then(blob => {
-      this.body = {
-        id,
-        readmeContent: blob.toString()
-      };
-    }).catch(err => {
-      this.body = err.toString();
-    });
-
+    .then(
+      repo => {
+        // this is a git repo
+        // read the readme file
+        return readRepoFile(repo, 'README.md');
+      },
+      err => {
+        // this is not a git repo
+        this.body = {
+          type: 'error',
+          message: `${id} is not a valid git repo.`
+        };
+      }
+    ).then(
+      blob => {
+        if (!blob) return;
+        // there is a readme file
+        this.body = {
+          id,
+          readmeContent: blob.toString()
+        };
+      },
+      err => {
+        // no readme file found
+        this.body = { id };
+      }
+    ).catch(
+      err => {
+        this.body = err.toString();
+      }
+    );
 };
 
 module.exports.head = function * (){
