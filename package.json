@@ -2,6 +2,7 @@
   "name": "git-repo-server",
   "version": "1.0.0",
   "scripts": {
+    "test": "node test/test.js",
     "start": "node app.js"
   },
   "dependencies": {
