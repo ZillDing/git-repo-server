@@ -19,6 +19,7 @@ app.use(logger());
 app.use(route.get('/', repos.home));
 app.use(route.get('/repos/', repos.all));
 app.use(route.get('/repos/:id', repos.fetch));
+app.use(route.post('/repos/', repos.add));
 app.use(route.options('/', repos.options));
 app.use(route.trace('/', repos.trace));
 app.use(route.head('/', repos.head));

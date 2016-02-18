@@ -1,24 +1,27 @@
 'use strict';
 const path = require('path');
+const parse = require('co-body');
 
-const getDirs = require('../utils/getDirs');
+const getDirsSync = require('../utils/getDirsSync');
+const isDirSync = require('../utils/isDirSync');
 const readRepoFile = require('../utils/readRepoFile');
 const openGitRepo = require('../utils/openGitRepo');
+const initBareRepo = require('../utils/initBareRepo');
 
 const ROOT = '/opt/git';
 
-module.exports.home = function * home (next) {
+module.exports.home = function * home(next) {
   if ('GET' != this.method) return yield next;
   this.body = 'home';
 };
 
 // This must be avoided, use ajax in the view.
-module.exports.all = function * all (next) {
+module.exports.all = function * all(next) {
   if ('GET' != this.method) return yield next;
-  this.body = getDirs(ROOT);
+  this.body = getDirsSync(ROOT);
 };
 
-module.exports.fetch = function * fetch (id, next) {
+module.exports.fetch = function * fetch(id, next) {
   if ('GET' != this.method) return yield next;
 
   let gitRepo;
@@ -38,6 +41,19 @@ module.exports.fetch = function * fetch (id, next) {
     // no readme file
     this.body = { id };
   }
+};
+
+module.exports.add = function * add(data, next) {
+  if ('POST' != this.method) return yield next;
+  const repo = yield parse.form(this);
+  const id = repo.id;
+
+  if (isDirSync(path.join(ROOT, id))) {
+    this.throw(405, `${id} already exists.`);
+  }
+
+  yield initBareRepo(path.join(ROOT, id));
+  this.body = repo;
 };
 
 module.exports.head = function * (){
