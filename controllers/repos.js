@@ -45,7 +45,7 @@ module.exports.fetch = function * fetch(id, next) {
 
 module.exports.add = function * add(data, next) {
   if ('POST' != this.method) return yield next;
-  const repo = yield parse.form(this);
+  const repo = yield parse(this);
   const id = repo.id;
 
   if (isDirSync(path.join(ROOT, id))) {
