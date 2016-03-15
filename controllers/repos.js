@@ -1,6 +1,7 @@
 'use strict';
 const path = require('path');
 const parse = require('co-body');
+const rimrafPromise = require('rimraf-promise');
 
 const getDirsSync = require('../utils/getDirsSync');
 const isDirSync = require('../utils/isDirSync');
@@ -12,12 +13,14 @@ const ROOT = '/opt/git';
 
 module.exports.home = function * home(next) {
   if ('GET' != this.method) return yield next;
+
   this.body = 'home';
 };
 
 // This must be avoided, use ajax in the view.
 module.exports.all = function * all(next) {
   if ('GET' != this.method) return yield next;
+
   this.body = getDirsSync(ROOT);
 };
 
@@ -45,6 +48,7 @@ module.exports.fetch = function * fetch(id, next) {
 
 module.exports.add = function * add(data, next) {
   if ('POST' != this.method) return yield next;
+
   const repo = yield parse(this);
   const id = repo.id;
 
@@ -54,6 +58,23 @@ module.exports.add = function * add(data, next) {
 
   yield initBareRepo(path.join(ROOT, id));
   this.body = repo;
+};
+
+module.exports.remove = function * remove(id, next) {
+  if ('DELETE' != this.method) return yield next;
+
+  const fullPath = path.join(ROOT, id);
+
+  if (!isDirSync(fullPath)) {
+    this.throw(405, `${id} does not exist.`);
+  }
+
+  try {
+    yield rimrafPromise(fullPath, { glob: false });
+    this.body = { id };
+  } catch (err) {
+    this.throw(500, `error occured when deleting ${id}`);
+  }
 };
 
 module.exports.head = function * (){
