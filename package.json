@@ -7,7 +7,8 @@
     "build:webpack": "cross-env NODE_ENV=production webpack --config webpack.config.prod.js",
     "build": "npm run clean && npm run build:webpack",
     "dev": "node lib/app/devServer.js",
-    "start": "node lib/index.js"
+    "start": "node lib/index.js",
+    "postinstall": "npm run build"
   },
   "repository": {
     "type": "git",
