@@ -3,7 +3,7 @@
 > REST api for a simple git repo
 
 ```bash
-$ git clone https://github.com/ZillDing/git-repo-server.git
+$ git clone https://github.com/zillding/git-repo-server.git
 $ cd git-repo-server
 $ npm install
 $ npm start
