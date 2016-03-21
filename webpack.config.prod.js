@@ -16,8 +16,7 @@ module.exports = {
     new webpack.DefinePlugin({
       'process.env': {
         'NODE_ENV': JSON.stringify('production')
-      },
-      API_ROOT: JSON.stringify('/api')
+      }
     }),
     new webpack.optimize.UglifyJsPlugin({
       compressor: {

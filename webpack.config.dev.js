@@ -14,9 +14,6 @@ module.exports = {
     publicPath: '/static/'
   },
   plugins: [
-    new webpack.DefinePlugin({
-      API_ROOT: JSON.stringify('http://localhost:1337/api')
-    }),
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NoErrorsPlugin()
   ],
