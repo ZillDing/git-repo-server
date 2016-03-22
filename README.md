@@ -11,7 +11,7 @@ $ npm install
 $ npm start
 ```
 
-Open `http://localhost:3000` to see the results.
+Open `http://localhost:1337` to see the results.
 
 ### Development
 
