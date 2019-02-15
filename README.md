@@ -1,5 +1,7 @@
 # Git Repo Server
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/zillding/git-repo-server.svg)](https://greenkeeper.io/)
+
 REST api for a simple git repo
 
 ### Get Started
